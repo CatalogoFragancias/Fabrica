@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
+    <title>Catálogo Fábrica - Fragancias 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #dcd8d1;
+            background-image: radial-gradient(#d3cec5 1px, transparent 0);
+            background-size: 20px 20px;
+            font-family: 'Montserrat', sans-serif;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: rgba(245, 243, 239, 0.95);
+            padding: 40px 30px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #c9c4bb;
+        }
+        .header-title { text-align: center; margin-bottom: 25px; }
+        h1 { font-family: 'Alex Brush', cursive; font-size: 5rem; font-weight: 400; color: #000; margin: 0; line-height: 1; }
+        h3 { font-weight: 300; font-size: 1.2rem; color: #4a4a4a; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; }
+        
+        .filters-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .filter-btn {
+            background-color: transparent; border: 1px solid #8b7355; color: #8b7355; padding: 8px 16px; border-radius: 20px;
+            cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; transition: all 0.3s ease;
+        }
+        @media (hover: hover) { .filter-btn:hover { background-color: rgba(139, 115, 85, 0.1); } }
+        .filter-btn.active { background-color: #8b7355; color: #fff; }
+        
+        .search-container { position: relative; margin-bottom: 30px; }
+        .search-box { width: 100%; padding: 15px 20px; font-size: 16px; font-family: 'Montserrat', sans-serif; background-color: transparent; border: none; border-bottom: 2px solid #1a1a1a; box-sizing: border-box; transition: border-color 0.3s; }
+        .search-box:focus { outline: none; border-bottom: 2px solid #8b7355; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 400px; }
+        th, td { padding: 15px 10px; text-align: left; border-bottom: 1px solid #d3cec5; vertical-align: middle; }
+        th { font-weight: 600; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; color: #1a1a1a; }
+        @media (hover: hover) { tr:hover td { background-color: rgba(211, 206, 197, 0.3); } }
+        .marca-text { font-weight: 600; color: #000; }
+        .perfume-text { font-weight: 300; color: #2c2c2c; }
+        .category-badge { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #8b7355; display: inline-block; }
+        
+        .btn-add { background-color: #2c3e50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; transition: background-color 0.2s; white-space: nowrap; }
+        @media (hover: hover) { .btn-add:hover { background-color: #1a252f; } }
+        .btn-group { display: flex; gap: 4px; }
+        .btn-add.ml { padding: 7px 8px; min-width: 46px; text-transform: none; }
+        .btn-add.added { background-color: #27ae60; }
+        .summary-line.pend { color: #8b7355; }
+        .summary-note { font-size: 0.78rem; color: #8b7355; text-align: right; margin-top: 4px; }
+        .tier-hint { white-space: pre-line; }
+        .cat-mobile { display: none; }
+
+        .cart-floating {
+            position: fixed; bottom: 20px; right: 20px; background-color: #27ae60; color: white; padding: 15px 25px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; z-index: 1000; transition: transform 0.2s;
+        }
+        @media (hover: hover) { .cart-floating:hover { transform: scale(1.05); } }
+        .cart-count { background-color: white; color: #27ae60; padding: 2px 8px; border-radius: 12px; font-size: 0.9rem; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1001; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background-color: #f5f3ef; width: 100%; max-width: 500px; max-height: 90vh; max-height: 90dvh; border-radius: 8px; padding: 25px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #d3cec5; padding-bottom: 15px; margin-bottom: 15px; }
+        .modal-header h2 { margin: 0; font-size: 1.5rem; color: #1a1a1a; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7f8c8d; }
+        .cart-items-list { overflow-y: auto; flex-grow: 1; margin-bottom: 15px; padding-right: 10px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #d3cec5; }
+        .cart-item-info { flex-grow: 1; }
+        .cart-item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+        .cart-item-brand { font-size: 0.8rem; color: #7f8c8d; }
+        .cart-items-list { overflow-y: visible; flex-shrink: 0; }
+        .modal-content > * { flex-shrink: 0; }
+        .cart-item-genero { font-weight: 400; color: #8b7355; font-size: 0.8rem; }
+        .cart-controls { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { background-color: #d3cec5; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        
+        /* Calculadora y Resumen */
+        .cart-summary { border-top: 2px dashed #d3cec5; padding-top: 15px; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; display: none; }
+        .summary-line { display: flex; justify-content: space-between; margin-bottom: 8px; color: #4a4a4a; font-size: 0.9rem; }
+        .tier-hint { margin-top: 10px; font-size: 0.8rem; color: #8b7355; text-align: center; }
+        .tier-hint.warn { color: #b00020; font-weight: 600; }
+        .summary-line.promo { color: #d35400; font-weight: 600; display: none; }
+        .summary-line.total { font-size: 1.2rem; font-weight: bold; color: #1a1a1a; margin-top: 10px; border-top: 1px solid #d3cec5; padding-top: 10px; }
+
+        /* Formulario */
+        .checkout-form { display: none; flex-direction: column; gap: 10px; margin-bottom: 15px; border-top: 2px solid #d3cec5; padding-top: 15px; }
+        .checkout-form h3 { margin: 0; font-size: 1rem; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1px; }
+        .checkout-form input { padding: 12px 15px; border: 1px solid #c9c4bb; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 16px; background-color: #fff; }
+        .checkout-form input:focus, .checkout-form select:focus, .checkout-form textarea:focus { outline: none; border-color: #8b7355; }
+        .checkout-form select, .checkout-form textarea { padding: 12px 15px; border: 1px solid #c9c4bb; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 16px; background-color: #fff; color: #1a1a1a; }
+        .checkout-form textarea { resize: vertical; min-height: 60px; }
+        .form-row { display: flex; gap: 10px; }
+        .form-row > * { flex: 1; min-width: 0; }
+        .checkout-form .opt { font-size: 0.75rem; color: #7f8c8d; margin: -4px 0 0; }
+        .modal-content { overflow-y: auto; }
+
+        .btn-whatsapp { background-color: #25D366; color: white; border: none; padding: 15px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600; text-transform: uppercase; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        @media (hover: hover) { .btn-whatsapp:hover { background-color: #128C7E; } }
+        .empty-cart-msg { text-align: center; color: #7f8c8d; padding: 20px 0; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; padding-bottom: 80px; }
+            .container { padding: 20px 10px; }
+            h1 { font-size: 3.5rem; }
+            .filter-btn { padding: 6px 12px; font-size: 0.7rem; }
+            th, td { padding: 12px 8px; font-size: 0.85rem; }
+            .btn-add { font-size: 0.7rem; padding: 6px 10px; }
+            .btn-add.ml { padding: 6px 5px; min-width: 40px; font-size: 0.68rem; }
+            table { min-width: 0; }
+            .col-cat { display: none; }
+            th, td { padding: 12px 5px; }
+            .cat-mobile { display: block; margin-top: 4px; font-size: 0.65rem; }
+            .cart-floating { bottom: 15px; right: 15px; padding: 12px 20px; font-size: 0.9rem; }
+        }
+
+        .container { position: relative; }
+        .menu-wrap { position: absolute; top: 12px; right: 12px; z-index: 20; }
+        .menu-toggle { background: transparent; border: none; cursor: pointer; font-size: 1.6rem; line-height: 1; color: #4a4a4a; padding: 4px 10px; border-radius: 50%; }
+        @media (hover: hover) { .menu-toggle:hover { background: rgba(139,115,85,0.15); } }
+        .menu-dropdown { display: none; position: absolute; right: 0; top: 100%; min-width: 230px; background: #fff; border: 1px solid #c9c4bb; border-radius: 6px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); overflow: hidden; }
+        .menu-dropdown.open { display: block; }
+        .menu-item { display: block; width: 100%; text-align: left; background: none; border: none; padding: 12px 16px; font-family: 'Montserrat', sans-serif; font-size: 0.8rem; color: #1a1a1a; cursor: pointer; }
+        @media (hover: hover) { .menu-item:hover { background: rgba(139,115,85,0.12); } }
+        .menu-sep { height: 1px; background: #e2ded6; margin: 0; }
+        .config-field { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 5px; }
+        .config-field input { padding: 10px; border: 1px solid #c9c4bb; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 16px; }
+        .config-field small { color: #666; font-size: 0.75rem; }
+        .config-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .config-actions button { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .config-save { background: #8b7355; color: #fff; }
+        .config-cancel { background: #e2ded6; color: #1a1a1a; }
+        .config-section { margin-top: 18px; padding-top: 14px; border-top: 1px solid #d3cec5; }
+        .config-section small { display: block; color: #666; font-size: 0.75rem; margin-top: 4px; }
+        .pres-tabs { display: flex; gap: 6px; margin: 12px 0 10px; }
+        .pres-tab { flex: 1; padding: 8px; border: 1px solid #8b7355; background: transparent; color: #8b7355; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer; }
+        .pres-tab.active { background: #8b7355; color: #fff; }
+        .esc-table { width: 100%; min-width: 0; border-collapse: collapse; margin: 0; }
+        .esc-table th, .esc-table td { padding: 5px 3px; border-bottom: none; font-size: 0.72rem; text-transform: none; letter-spacing: 0; }
+        .esc-table tr:hover td { background: none; }
+        .esc-table input[type=number] { width: 100%; box-sizing: border-box; padding: 8px 6px; border: 1px solid #c9c4bb; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 16px; }
+        .esc-table input[type=checkbox] { width: 20px; height: 20px; }
+        .esc-del { background: none; border: none; color: #b00020; font-size: 1.1rem; cursor: pointer; padding: 4px 6px; }
+        .esc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .esc-actions button, .cfg-link { background: none; border: 1px dashed #8b7355; color: #8b7355; padding: 7px 10px; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        .sin-precio { padding: 12px; background: #ebe7e0; border-radius: 6px; font-size: 0.8rem; color: #4a4a4a; text-align: center; }
+        .config-extra { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .db-status { width: 100%; text-align: center; font-size: 0.75rem; color: #4a4a4a; min-height: 1em; }
+        .db-status.error { color: #b00020; }
+        .db-status.ok { color: #2e7d32; }
+        @media (max-width: 380px) { .btn-add.ml { min-width: 0; padding: 6px 4px; font-size: 0.64rem; } .btn-group { gap: 3px; } .container { padding: 20px 6px; } .marca-text { font-size: 0.8rem; } }
+        /* --- Compatibilidad celulares (iPhone / Android) --- */
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        button, select, input, textarea { touch-action: manipulation; -webkit-tap-highlight-color: rgba(139,115,85,0.2); }
+        button { color: inherit; }
+        .btn-add, .config-save, .btn-whatsapp, .filter-btn.active { color: #fff; }
+        .filter-btn { color: #8b7355; }
+        .filter-btn.active { color: #fff; }
+        .qty-btn { width: 32px; height: 32px; color: #1a1a1a; font-size: 1rem; padding: 0; }
+        .checkout-form select { -webkit-appearance: none; appearance: none; background-image: linear-gradient(45deg, transparent 50%, #8b7355 50%), linear-gradient(135deg, #8b7355 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+        .modal-content { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        body.modal-abierto { overflow: hidden; }
+        .cart-floating { bottom: calc(20px + env(safe-area-inset-bottom)); right: calc(20px + env(safe-area-inset-right)); }
+        body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+        .modal-overlay { padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom)); }
+        @media (max-width: 600px) {
+            .cart-floating { bottom: calc(15px + env(safe-area-inset-bottom)); right: calc(15px + env(safe-area-inset-right)); }
+            .modal-overlay { padding-left: 10px; padding-right: 10px; }
+            .modal-content { padding: 20px 16px; }
+        }
+        @media (max-width: 340px) {
+            th { letter-spacing: 0; font-size: 0.68rem; }
+            th, td { padding: 10px 3px; }
+            .marca-text { font-size: 0.72rem; word-break: break-word; }
+            .perfume-text { font-size: 0.78rem; }
+            .category-badge.cat-mobile { letter-spacing: 0; }
+            .container { padding: 16px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="menu-wrap">
+        <button class="menu-toggle" onclick="toggleMenu(event)" aria-label="Menú">⋮</button>
+        <div class="menu-dropdown" id="menuDropdown">
+            <button class="menu-item" onclick="cerrarMenu(); document.getElementById('txtInput').click()">📄 Actualizar catálogo (TXT)</button>
+            <button class="menu-item" onclick="cerrarMenu(); descargarTXT()">⬇ Descargar TXT actual</button>
+            <button class="menu-item" onclick="cerrarMenu(); restaurarCatalogo()">↺ Restaurar original</button>
+            <div class="menu-sep"></div>
+            <button class="menu-item" onclick="cerrarMenu(); descargarCatalogoHTML()">💾 Descargar catálogo para compartir</button>
+            <div class="menu-sep"></div>
+            <button class="menu-item" onclick="cerrarMenu(); abrirConfig()">⚙ Configuración</button>
+        </div>
+        <input type="file" id="txtInput" accept=".txt,text/plain" style="display:none" onchange="cargarTXT(event)">
+    </div>
+    <div class="header-title">
+        <h1>Fragancias</h1>
+        <h3>Mayorista de fragancias premium 2026</h3>
+    </div>
+    
+    <div class="filters-container">
+        <button class="filter-btn active" onclick="setCategory('Todas', this)">Todas</button>
+        <button class="filter-btn" onclick="setCategory('Femenin', this)">Femeninas</button>
+        <button class="filter-btn" onclick="setCategory('Masculin', this)">Masculinas</button>
+        <button class="filter-btn" onclick="setCategory('Unisex', this)">Unisex</button>
+        <button class="filter-btn" onclick="setCategory('Árabe', this)">Árabes</button>
+        <button class="filter-btn" onclick="setCategory('Novedades', this)">Nuevos / Fusiones</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="Buscar por marca o nombre de fragancia..." oninput="filterTable()" autocomplete="off" autocorrect="off" enterkeyhint="search">
+    </div>
+
+    <div class="db-status" id="dbStatus"></div>
+
+    <div class="table-responsive">
+        <table id="catalogTable">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th>Fragancia</th>
+                    <th class="col-cat">Categoría</th>
+                    <th>Agregar</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="cart-floating" id="cartBtn" onclick="toggleCartModal()" style="display: none;">
+    🛒 Ver Pedido <span class="cart-count" id="cartCount">0</span>
+</div>
+
+<div class="modal-overlay" id="cartModal" onclick="closeModalOnOutsideClick(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Tu Pedido</h2>
+            <button class="close-btn" onclick="toggleCartModal()">×</button>
+        </div>
+        
+        <div class="cart-items-list" id="cartItemsList">
+            <!-- Los items del carrito irán aquí -->
+        </div>
+
+        <!-- Resumen de Calculadora -->
+        <div class="cart-summary" id="cartSummary">
+            <div id="resumenPresentaciones"></div>
+            <div class="summary-line promo" id="promoLine">
+                <span id="regaloText">🎁 Perfume de 30ml de regalo</span>
+            </div>
+            <div class="summary-line total">
+                <span>Total a pagar:</span>
+                <span id="totalDisplay">$0</span>
+            </div>
+            <div class="summary-note" id="totalNote"></div>
+            <div class="tier-hint" id="tierHint"></div>
+        </div>
+
+        <div class="checkout-form" id="checkoutForm">
+            <h3>Datos de envío</h3>
+            <input type="text" id="clienteNombre" placeholder="Nombre completo" autocomplete="name">
+            <input type="tel" id="clienteCelular" inputmode="tel" placeholder="Celular" autocomplete="tel">
+            <div class="form-row">
+                <input type="text" id="clienteLocalidad" placeholder="Localidad" autocomplete="address-level2">
+                <input type="text" id="clienteCP" inputmode="numeric" placeholder="Cód. postal" autocomplete="postal-code">
+            </div>
+            <input type="email" id="clienteMail" inputmode="email" placeholder="Mail" autocomplete="email" autocapitalize="off" autocorrect="off">
+            <select id="clienteEnvio" onchange="cambiarEnvio()">
+                <option value="">Sucursal o domicilio...</option>
+                <option value="Sucursal">Retiro en sucursal</option>
+                <option value="Domicilio">Envío a domicilio</option>
+            </select>
+            <input type="text" id="clienteDireccion" placeholder="Dirección de envío (calle, número, piso/depto)" autocomplete="street-address" style="display:none;">
+        </div>
+
+        <button class="btn-whatsapp" onclick="enviarPorWhatsApp()" id="btnWsp" style="display:none;">
+            Enviar pedido por WhatsApp
+        </button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="configModal" onclick="if(event.target.id==='configModal') cerrarConfig()">
+    <div class="modal-content" style="max-width:480px;">
+        <div class="modal-header">
+            <h2>Configuración</h2>
+            <button class="close-btn" onclick="cerrarConfig()">×</button>
+        </div>
+        <div class="config-field">
+            <label for="cfgWhatsApp"><strong>Número de WhatsApp</strong></label>
+            <input type="tel" id="cfgWhatsApp" inputmode="numeric" placeholder="5492216418078">
+            <small>Con código de país y sin +, espacios ni guiones. Ej: 5492216418078</small>
+        </div>
+        <div class="config-section">
+            <strong>Precios por presentación</strong>
+            <small>Precio por unidad según cuántas unidades se pidan de ese tamaño. 🎁 = incluye perfume de 30ml de regalo.</small>
+            <div class="pres-tabs" id="presTabs"></div>
+            <div id="presEditor"></div>
+        </div>
+        <div class="config-actions">
+            <button class="config-cancel" onclick="cerrarConfig()">Cancelar</button>
+            <button class="config-save" onclick="guardarConfig()">Guardar</button>
+        </div>
+        <div class="config-extra">
+            <button class="cfg-link" onclick="restaurarPrecios()">↺ Volver a los precios originales del archivo</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Copia del archivo tal como se abrió (se usa para "Descargar catálogo para compartir").
+    const HTML_ORIGINAL = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    // ==========================================
+    // CONFIGURACIÓN
+    // ==========================================
+    const WSP_KEY = 'catalogoFabrica_wsp';
+    const WSP_POR_DEFECTO = "5492216418078";
+    let numeroWhatsApp = WSP_POR_DEFECTO;
+    try { numeroWhatsApp = localStorage.getItem(WSP_KEY) || WSP_POR_DEFECTO; } catch (e) {}
+    
+    // PRESENTACIONES Y PRECIOS MAYORISTAS
+    // Cada presentación tiene sus propias escalas (de mayor a menor cantidad).
+    // desde = cantidad mínima de esa presentación | precio = precio por unidad | regalo = incluye perfume 30ml
+    // Si todavía no hay precios, dejar  escalas: null  y figura "A confirmar".
+    const PRESENTACIONES_ARCHIVO = /*PRECIOS_INICIO*/[
+        { "id": "30ml", "nombre": "30 ml", "escalas": null },
+        { "id": "60ml", "nombre": "60 ml", "escalas": [
+            { "desde": 90, "precio": 7200, "regalo": true },
+            { "desde": 50, "precio": 7500, "regalo": true },
+            { "desde": 30, "precio": 8200, "regalo": true },
+            { "desde": 20, "precio": 8400, "regalo": false },
+            { "desde": 10, "precio": 8600, "regalo": false },
+            { "desde": 1, "precio": 9000, "regalo": false }
+        ]},
+        { "id": "100ml", "nombre": "100 ml", "escalas": null }
+    ]/*PRECIOS_FIN*/;
+
+    // Los precios editados desde ⚙ Configuración se guardan en este navegador.
+    const PRECIOS_KEY = 'catalogoFabrica_precios';
+    let PRESENTACIONES = JSON.parse(JSON.stringify(PRESENTACIONES_ARCHIVO));
+    try {
+        const guardados = JSON.parse(localStorage.getItem(PRECIOS_KEY) || 'null');
+        if (Array.isArray(guardados)) {
+            PRESENTACIONES = PRESENTACIONES_ARCHIVO.map(p => {
+                const g = guardados.find(x => x.id === p.id);
+                return { id: p.id, nombre: p.nombre, escalas: g ? g.escalas : p.escalas };
+            });
+        }
+    } catch (e) {}
+    // ==========================================
+
+    const rawData = /*CATALOGO_INICIO*/[
+        "Carolina Herrera|212 Glam|Femeninas", "Carolina Herrera|212 Héroes|Femeninas", "Carolina Herrera|212 New York|Femeninas", "Carolina Herrera|212 Sexy|Femeninas", "Carolina Herrera|212 VIP|Femeninas", "Carolina Herrera|212 VIP Rosé|Femeninas", "Carolina Herrera|212 VIP Rosé Extra|Femeninas", "Carolina Herrera|212 VIP Rosé Red|Femeninas", "Penhaligon's|A Kiss of Bliss|Femeninas", "Giorgio Armani|Acqua Di Gio|Femeninas", "Giorgio Armani|Acqua Di Gioia|Femeninas", "Christian Dior|Addict Dior|Femeninas", "Thierry Mugler|Alien|Femeninas", "Thierry Mugler|Alien Goddess|Femeninas", "Chanel|Allure|Femeninas", "Paula|Alma|Femeninas", "Givenchy|Amarige|Femeninas", "Cacharel|Amor Amor|Femeninas", "Cacharel|Anais Anais|Femeninas", "Givenchy|Ange ou Demon|Femeninas", "Givenchy|Ange ou Demon Le Secret|Femeninas", "Givenchy|Ange ou Demon Le Secret Elixir|Femeninas", "Thierry Mugler|Angel|Femeninas", "Thierry Mugler|Angel Muse|Femeninas", "Thierry Mugler|Angel Nova|Femeninas", "Armani|Armani Code|Femeninas", "Thierry Mugler|Aura|Femeninas", "D.K.N.Y.|Be Delicious|Femeninas", "D.K.N.Y.|Be Delicious Fresh Blossom|Femeninas", "Yves Saint Laurent|Black Opium|Femeninas", "Yves Saint Laurent|Black Opium Glowing|Femeninas", "Yves Saint Laurent|Black Opium Neon|Femeninas", "Yves Saint Laurent|Black Opium Over Red|Femeninas", "Tom Ford|Black Orchid|Femeninas", "Gucci|Bloom|Femeninas", "Ralph Lauren|Blue|Femeninas", "Antonio Banderas|Blue Seduction|Femeninas", "Viktor & Rolf|Bonbon|Femeninas", "Boos|Boos Intense|Femeninas", "Boos|Boos Intense Lumiere|Femeninas", "Valentino|Born In Roma Intense|Femeninas", "Versace|Bright Cristal|Femeninas", "Gres|Cabotine|Femeninas", "Carolina Herrera|Carolina Herrera|Femeninas", "Carolina Herrera|CH|Femeninas", "Carolina Herrera|CH L'Eau|Femeninas", "Carolina Herrera|CH Privé|Femeninas", "Carolina Herrera|CH Sublime|Femeninas", "Chanel|Chance|Femeninas", "Chanel|Chanel N°5|Femeninas", "María Cher|CHER 18M|Femeninas", "Escada|Cherry In The Air|Femeninas", "J.P. Gaultier|Classique|Femeninas", "Ariana Grande|Cloud|Femeninas", "Chanel|Coco Chanel|Femeninas", "Davidoff|Cool Water|Femeninas", "Creed|Creed Aventus For Her|Femeninas", "D.K.N.Y.|D.K.N.Y.|Femeninas", "Marc Jacobs|Daisy|Femeninas", "Marly|Delina Parfums|Femeninas", "Hugo Boss|Deep Red|Femeninas", "J.P. Gaultier|Divine|Femeninas", "Lanvin|Eclat D'Arpege|Femeninas", "Cacharel|Eden|Femeninas", "Versace|Eros|Femeninas", "Calvin Klein|Eternity|Femeninas", "Calvin Klein|Euphoria|Femeninas", "Givenchy|Extravagance|Femeninas", "Paco Rabanne|Fame|Femeninas", "Paco Rabanne|Fame Lady Gaga|Femeninas", "Paco Rabanne|Fame Parfum|Femeninas", "Britney Spears|Fantasy|Femeninas", "Narciso Rodríguez|Fleur Musc|Femeninas", "Gucci|Flora Gorgeous Gardenia|Femeninas", "Kenzo|Flower|Femeninas", "Kenzo|Flower Ikebana|Femeninas", "Kenzo|Flower Poppy|Femeninas", "Kenzo|Flower Tag|Femeninas", "Viktor & Rolf|Flowerbomb|Femeninas", "Dior|For Ever And Ever|Femeninas", "Burberry|Goddess|Femeninas", "Bvlgary|Goldea|Femeninas", "Viktor & Rolf|Good Fortune|Femeninas", "Carolina Herrera|Good Girl|Femeninas", "Carolina Herrera|Good Girl Blush|Femeninas", "Carolina Herrera|Good Girl Dazzling Garden|Femeninas", "Carolina Herrera|Good Girl Glorious Gold|Femeninas", "Carolina Herrera|Good Girl Supreme|Femeninas", "Carolina Herrera|Good Girl Very|Femeninas", "Carolina Herrera|Good Girl Very Glam|Femeninas", "Gucci|Gucci Guilty|Femeninas", "Gucci|Gucci Guilty Black|Femeninas", "J. Del Pozo|Halloween|Femeninas", "Hugo Boss|Hugo Boss Orange|Femeninas", "Natura|Natura 1|Femeninas", "Natura|Humor 5|Femeninas", "Lancôme|Hypnose|Femeninas", "Christian Dior|Hypnotic Poison|Femeninas", "Lancôme|Idole|Femeninas", "Lancôme|Idole Aura|Femeninas", "Calvin Klein|IN2U|Femeninas", "María Cher|Iris|Femeninas", "Givenchy|Irresistible|Femeninas", "Christian Dior|J'Adore|Femeninas", "Christian Dior|J'Adore Voile|Femeninas", "Jimmy Choo|Jimmy Choo|Femeninas", "Kenzo|Jungle|Femeninas", "Natura|Kayak|Femeninas", "Kenzo|Kenzo Amour|Femeninas", "Kenzo|Kenzo D'Ete|Femeninas", "Kenzo|Kenzo World|Femeninas", "Issey Miyake|L'Eau D'Issey|Femeninas", "Kenzo|L'Eau Par Kenzo|Femeninas", "Givenchy|L'Interdit|Femeninas", "Givenchy|L'Interdit Rouge|Femeninas", "J.P. Gaultier|La Belle|Femeninas", "Carolina Herrera|La Bomba|Femeninas", "Guerlain|La Petite Robe Noire|Femeninas", "Lancôme|La Vida Es Bella|Femeninas", "Lancôme|La Vida Es Bella Florale|Femeninas", "Lancôme|La Vida Es Bella Intense|Femeninas", "Givenchy|La Vida Es Bella L'Absolu|Femeninas", "Lancôme|La Vida Es Bella Rose|Femeninas", "Paco Rabanne|Lady Million|Femeninas", "Paco Rabanne|Lady Million Empire|Femeninas", "Paco Rabanne|Lady Million Fabulous|Femeninas", "Paco Rabanne|Lady Million Privé|Femeninas", "Paco Rabanne|Lady Million Royal|Femeninas", "Yves Saint Laurent|Libre|Femeninas", "Dolce & Gabbana|Light Blue|Femeninas", "Dolce & Gabbana|Light Blue Intense|Femeninas", "Dolce & Gabbana|Light Blue Sun|Femeninas", "Givenchy|L'Interdit Absolu|Femeninas", "Givenchy|Live Irresistible|Femeninas", "Givenchy|Live Irresistible Rosy Crush|Femeninas", "Lolita Lempicka|Lolita Lempicka|Femeninas", "Cacharel|Lou Lou|Femeninas", "Moschino|Love Love|Femeninas", "Katy Perry|Meow|Femeninas", "Tom Ford|Metallique|Femeninas", "Britney Spears|Midnight Fantasy|Femeninas", "Christian Dior|Midnight Poison|Femeninas", "Paco Rabanne|Million Gold For Her|Femeninas", "Christian Dior|Miss Dior|Femeninas", "Christian Dior|Miss Dior Blooming|Femeninas", "Christian Dior|Miss Dior Parfum|Femeninas", "Christian Dior|Miss Dior Rose N'Roses|Femeninas", "Miu Miu|Miu Miu|Femeninas", "Yves Saint Laurent|Mon Paris|Femeninas", "Armani|My Way|Femeninas", "Armani|My Way Intense|Femeninas", "Narciso Rodríguez|Narciso Rodríguez|Femeninas", "Narciso Rodríguez|Narciso Rodríguez Rouge|Femeninas", "Nina Ricci|Nina|Femeninas", "Nina Ricci|Nina Bella|Femeninas", "Nina Ricci|Nina Luna|Femeninas", "Nina Ricci|Nina Rouge|Femeninas", "Paco Rabanne|Olympéa|Femeninas", "Paco Rabanne|Olympéa Aqua Legere|Femeninas", "Paco Rabanne|Olympéa Blossom|Femeninas", "Paco Rabanne|Olympéa Intense|Femeninas", "Paco Rabanne|Olympéa Legend|Femeninas", "Paco Rabanne|Olympéa Solar|Femeninas", "Bvlgari|Omnia Coral|Femeninas", "Bvlgari|Omnia Crystalline|Femeninas", "Calvin Klein|One Shock|Femeninas", "María Cher|Onyx Elixir|Femeninas", "Yves Saint Laurent|Opium|Femeninas", "Givenchy|Organza|Femeninas", "Oscar De La Renta|Oscar De La Renta|Femeninas", "Givenchy|Oui La Vie Est Belle|Femeninas", "Givenchy|Play|Femeninas", "Givenchy|Play Intense|Femeninas", "Christian Dior|Poison|Femeninas", "Christian Dior|Poison Girl|Femeninas", "Christian Dior|Pure Poison|Femeninas", "Ralph Lauren|Pure Turquoise|Femeninas", "Paco Rabanne|Pure XS|Femeninas", "Dolce & Gabbana|Q|Femeninas", "Britney Spears|Radiance|Femeninas", "Ralph Lauren|Ralph|Femeninas", "Ralph Lauren|Ralph Wild|Femeninas", "Nina Ricci|Ricci Ricci|Femeninas", "Ted Lapidus|Rumba|Femeninas", "Tom Ford|Santal Blush|Femeninas", "J.P. Gaultier|Scandal By Night|Femeninas", "J.P. Gaultier|Scandal|Femeninas", "J.P. Gaultier|Scandal A Paris|Femeninas", "J.P. Gaultier|Scandal Gold|Femeninas", "J.P. Gaultier|Scandal Le Parfum|Femeninas", "Shakira|Shakira Elixir|Femeninas", "Shakira|Shakira Rock|Femeninas", "Armani|Sí|Femeninas", "Armani|Sí Intense|Femeninas", "Armani|Sí Passione|Femeninas", "Victoria's Secret|Summer Daze|Femeninas", "Ariana Grande|Sweet Like Candy|Femeninas", "Dolce & Gabbana|The One|Femeninas", "Dolce & Gabbana|The Only One|Femeninas", "Dolce & Gabbana|The Only One Intense|Femeninas", "Tommy Hilfiger|Tommy Girl|Femeninas", "Lacoste|Touch Of Pink|Femeninas", "Moschino|Toy 2|Femeninas", "Moschino|Toy 2 Bubble Gum|Femeninas", "Lancôme|Tresor Midnight Rose|Femeninas", "Lancôme|Tresor|Femeninas", "Lancôme|Tresor Le Nuit|Femeninas", "Hermes|Twilly d'Hermes|Femeninas", "Paco Rabanne|Ultraviolet|Femeninas", "Nina Ricci|Venus|Femeninas", "Givenchy|Very Irresistible|Femeninas", "Victoria's Secret|Very Sexy|Femeninas", "Azzaro|Wanted Girl|Femeninas", "Paco Rabanne|XS Aphrodisiaque|Femeninas", "Paco Rabanne|XS Be a Legend|Femeninas", "Paco Rabanne|XS Black|Femeninas", "Paco Rabanne|XS Black Potion|Femeninas", "Versace|Yellow Diamond|Femeninas", "Cacharel|Yes I Am|Femeninas", "Armani|You|Femeninas",
+
+        "Carolina Herrera|212 Glam|Masculinas", "Carolina Herrera|212 Héroes|Masculinas", "Carolina Herrera|212 New York|Masculinas", "Carolina Herrera|212 On Ice|Masculinas", "Carolina Herrera|212 Sexy|Masculinas", "Carolina Herrera|212 VIP|Masculinas", "Carolina Herrera|212 VIP Black|Masculinas", "Carolina Herrera|212 VIP Black Extra|Masculinas", "Carolina Herrera|212 VIP Black Red|Masculinas", "Carolina Herrera|212 VIP Wild|Masculinas", "Carolina Herrera|212 VIP Wins|Masculinas", "Thierry Mugler|A Men|Masculinas", "Giorgio Armani|Acqua Di Gio|Masculinas", "Giorgio Armani|Acqua Di Gio Essenza|Masculinas", "Giorgio Armani|Acqua Di Gio Profondo|Masculinas", "Giorgio Armani|Acqua Di Gio Profumo|Masculinas", "Thierry Mugler|Alien|Masculinas", "Chanel|Allure Sport|Masculinas", "Thierry Mugler|Angel|Masculinas", "Bvlgari|Aqva Marine|Masculinas", "Giorgio Armani|Armani Code|Masculinas", "Giorgio Armani|Armani Code Absolu|Masculinas", "Giorgio Armani|Armani Code Profumo|Masculinas", "Armani|Attitude|Masculinas", "Azzaro|Azzaro|Masculinas", "Carolina Herrera|Bad Boy|Masculinas", "Carolina Herrera|Bad Boy Cobalt|Masculinas", "Carolina Herrera|Bad Boy Dazzling Garden|Masculinas", "Carolina Herrera|Bad Boy Extreme|Masculinas", "Carolina Herrera|Bad Boy Le Parfum|Masculinas", "DKNY|Be Delicious|Masculinas", "Chanel|Bleu|Masculinas", "Versace|Blue Jean|Masculinas", "Givenchy|Blue Label|Masculinas", "Antonio Banderas|Blue Seduction|Masculinas", "Bvlgari|BLV Notte|Masculinas", "Boos|Boos Intense|Masculinas", "Boos|Boos Intense Night|Masculinas", "Hugo Boss|Boss Bottled Absolute|Masculinas", "Hugo Boss|Boss The Scent Elixir|Masculinas", "Bvlgari|Bvlgari Man Extreme|Masculinas", "Bvlgari|Bvlgari Man In Black|Masculinas", "Bvlgari|Bvlgari Wood Essence|Masculinas", "Carolina Herrera|Carolina Herrera Clásico|Masculinas", "Carolina Herrera|CH|Masculinas", "Carolina Herrera|CH Africa|Masculinas", "Carolina Herrera|CH Privé|Masculinas", "Davidoff|Champion|Masculinas", "Calvin Klein|CK In2U|Masculinas", "Calvin Klein|CK Man|Masculinas", "Calvin Klein|CK One Gold|Masculinas", "Calvin Klein|CK One Red|Masculinas", "Davidoff|Cool Water|Masculinas", "Creed|Creed Aventus|Masculinas", "Creed|Creed Royal Oud|Masculinas", "Hugo Boss|Dark Blue|Masculinas", "Calvin Klein|Defy|Masculinas", "Christian Dior|Dior Homme|Masculinas", "Christian Dior|Dior Homme Intense|Masculinas", "Christian Dior|Dior Homme Sport|Masculinas", "Versace|Dreamer|Masculinas", "Christian Dior|Dune|Masculinas", "Versace|Dylan Blue|Masculinas", "Christian Dior|Eau Sauvage|Masculinas", "Emporio Armani|Emporio Armani|Masculinas", "Armani|Emporio Night|Masculinas", "Versace|Eros|Masculinas", "Versace|Eros Flame|Masculinas", "Calvin Klein|Eternity Air|Masculinas", "Christian Dior|Fahrenheit|Masculinas", "Christian Dior|Fahrenheit 32|Masculinas", "Fendi|Fan Di Fendi|Masculinas", "Ferrari|Ferrari Black|Masculinas", "Ferrari|Ferrari Red|Masculinas", "Abercrombie|Fierce|Masculinas", "J.P. Gaultier|Fleur Du Male|Masculinas", "Tom Ford|Fucking Fabulous|Masculinas", "Montale|Full Incense|Masculinas", "Issey Miyake|Fusion D'Issey|Masculinas", "Givenchy|Gentleman Only|Masculinas", "Givenchy|Gentleman Only Absolut|Masculinas", "Givenchy|Gentleman Reserve Privée|Masculinas", "Givenchy|Gentleman Society|Masculinas", "Gucci|Gucci Guilty Black|Masculinas", "J. Del Pozo|Halloween|Masculinas", "Natura|Hommen Dom|Masculinas", "Hugo Boss|Hugo Boss|Masculinas", "Hugo Boss|Hugo Boss Bottled|Masculinas", "Hugo Boss|Hugo Boss Bottled Infinite|Masculinas", "Hugo Boss|Hugo Boss Just Different|Masculinas", "Hugo Boss|Hugo Boss Night Bottled|Masculinas", "Hugo Boss|Hugo Boss Red|Masculinas", "Lancôme|Hypnose|Masculinas", "Antonio Banderas|Icon|Masculinas", "Tommy Hilfiger|Impact|Masculinas", "Givenchy|Insense Ultramarine|Masculinas", "Paco Rabanne|Invictus|Masculinas", "Paco Rabanne|Invictus Aqua|Masculinas", "Paco Rabanne|Invictus Intense|Masculinas", "Paco Rabanne|Invictus Legend|Masculinas", "Paco Rabanne|Invictus Onix|Masculinas", "Paco Rabanne|Invictus Platinum|Masculinas", "Paco Rabanne|Invictus Victory|Masculinas", "Paco Rabanne|Invictus Victory Elixir|Masculinas", "Yves Saint Laurent|Jazz|Masculinas", "Joop!|Joop!|Masculinas", "Kenzo|Kenzo Homme|Masculinas", "Kenzo|Kenzo Homme Eau de Parfum|Masculinas", "Kenzo|Kenzo Homme Night|Masculinas", "Dolce & Gabbana|King|Masculinas", "Antonio Banderas|King of Seduction|Masculinas", "Yves Saint Laurent|Kouros|Masculinas", "Issey Miyake|L'Eau Bleue D'Issey|Masculinas", "Issey Miyake|L'Eau D'Issey|Masculinas", "Kenzo|L'Eau Kenzo Boisee|Masculinas", "Kenzo|L'Eau Par Kenzo|Masculinas", "Guerlain|L'Homme Ideal|Masculinas", "Marly|Layton Exclusif|Masculinas", "Yves Saint Laurent|La Nuit de L'Homme Bleu Electrique|Masculinas", "Lacoste|Lacoste Bleu|Masculinas", "J.P. Gaultier|Le Beau|Masculinas", "J.P. Gaultier|Le Beau Paradise Garden|Masculinas", "J.P. Gaultier|Le Male Elixir|Masculinas", "J.P. Gaultier|Le Male Le Parfum|Masculinas", "J.P. Gaultier|Le Male|Masculinas", "Mont Blanc|Legend|Masculinas", "Yves Saint Laurent|L'Homme Libre|Masculinas", "Dolce & Gabbana|Light Blue|Masculinas", "Loewe|Loewe 7|Masculinas", "Loewe|Loewe Scent Of Marihuana|Masculinas", "Prada|Luna Rossa|Masculinas", "Paco Rabanne|Million Gold|Masculinas", "Yves Saint Laurent|MYSLF|Masculinas", "Narciso Rodriguez|Narciso Rodriguez|Masculinas", "Giesso|N°1 Giesso|Masculinas", "Issey Miyake|Nuit D'Issey|Masculinas", "Issey Miyake|Nuit D'Issey Bleu Astral|Masculinas", "Yves Saint Laurent|Nuit L'Homme|Masculinas", "Tom Ford|Ombre Leather|Masculinas", "Louis Vuitton|Ombre Nomade|Masculinas", "Paco Rabanne|One Million|Masculinas", "Paco Rabanne|One Million Elixir|Masculinas", "Paco Rabanne|One Million Golden Oud|Masculinas", "Paco Rabanne|One Million Intense|Masculinas", "Paco Rabanne|One Million Lucky|Masculinas", "Paco Rabanne|One Million Privé|Masculinas", "Paco Rabanne|One Million Royal|Masculinas", "Tom Ford|Oud Wood|Masculinas", "Le Labo|Patchouli 24|Masculinas", "Paco Rabanne|Phantom|Masculinas", "Paco Rabanne|Phantom Parfum|Masculinas", "Givenchy|Pi|Masculinas", "Givenchy|Play Intense|Masculinas", "Ralph Lauren|Polo|Masculinas", "Ralph Lauren|Polo Black|Masculinas", "Ralph Lauren|Polo Blue|Masculinas", "Ralph Lauren|Polo Red|Masculinas", "Ralph Lauren|Polo Red Rush|Masculinas", "Ralph Lauren|Polo Sport|Masculinas", "Ralph Lauren|Polo Ultra Blue|Masculinas", "Givenchy|Pour Homme|Masculinas", "Antonio Banderas|Power of Seduction|Masculinas", "Paco Rabanne|Pure XS Night|Masculinas", "Thierry Mugler|Pure Havane A Men|Masculinas", "Armani|Royal Oud|Masculinas", "Christian Dior|Sauvage|Masculinas", "Christian Dior|Sauvage Elixir|Masculinas", "J.P. Gaultier|Scandal|Masculinas", "J.P. Gaultier|Scandal Absolu|Masculinas", "J.P. Gaultier|Scandal Intense|Masculinas", "J.P. Gaultier|Scandal Le Parfum|Masculinas", "Calvin Klein|Shock|Masculinas", "Jacques Bogart|Silver Scent|Masculinas", "Viktor & Rolf|Spicebomb|Masculinas", "Viktor & Rolf|Spicebomb Metalique Musk|Masculinas", "Montblanc|Starwalker|Masculinas", "Giorgio Armani|Stronger With You|Masculinas", "Giorgio Armani|Stronger With You Intensely|Masculinas", "Ted Lapidus|Ted Lapidus|Masculinas", "Hermes|Terre Hermes|Masculinas", "Azzaro|The Most Wanted|Masculinas", "Dolce & Gabbana|The One D&G|Masculinas", "Dolce & Gabbana|The One Grey|Masculinas", "Tom Ford|Tobacco Vanille|Masculinas", "Tommy Hilfiger|Tommy Hilfiger|Masculinas", "Moschino|Toy Boy|Masculinas", "Van Cleef|Tsar|Masculinas", "J.P. Gaultier|Ultra Male|Masculinas", "Paco Rabanne|Ultraviolet|Masculinas", "Valentino|Valentino Born In Roma|Masculinas", "Valentino|Valentino Born In Roma Gold|Masculinas", "Valentino|Valentino Uomo|Masculinas", "Givenchy|Very Irresistible|Masculinas", "Azzaro|Wanted|Masculinas", "Azzaro|Wanted By Night|Masculinas", "Givenchy|Xeryus Rouge|Masculinas", "Paco Rabanne|XS|Masculinas", "Paco Rabanne|XS Aphrodisiaque|Masculinas", "Paco Rabanne|XS Black|Masculinas", "Paco Rabanne|XS Black Potion|Masculinas", "Paco Rabanne|XS L'Excess|Masculinas", "Paco Rabanne|XS Pure|Masculinas", "Yves Saint Laurent|Y Eau de Parfum|Masculinas", "Yves Saint Laurent|Y Live|Masculinas",
+
+        "Calvin Klein|All|Unisex", "Montale|Arabians Tonka|Unisex", "Maison Francis Kurkdjian|Baccarat Rouge|Unisex", "Calvin Klein|Be|Unisex", "Giardini Di Toscana|Bianco Latte|Unisex", "Montale|Boise Fruite|Unisex", "Xerjoff|Erba Pura|Unisex", "Calvin Klein|Everyone|Unisex", "Louis Vuitton|Fleur Du Desert|Unisex", "Le Labo|Gaiac 10 Tokyo|Unisex", "Penhaligons|Halfeti|Unisex", "Montale|Intense Café|Unisex", "Tom Ford|Lost Cherry|Unisex", "Tom Ford|Mandarino Di Amalfi|Unisex", "Tom Ford|Neroli Portofino|Unisex", "Calvin Klein|One|Unisex", "Le Labo|Santal 33|Unisex", "Maison Crivelli|Tubéreuse Astrale|Unisex", "Le Labo|Vanille 44|Unisex",
+
+        "Lattafa|Eclaire|Árabe Femenina", "Kayali|Eden Sparkling|Árabe Femenina", "Lattafa|Emaan|Árabe Femenina", "Lattafa|Fakhar Rosé|Árabe Femenina", "Lattafa|Mayar|Árabe Femenina", "Lattafa|Mayar Cherry Intense|Árabe Femenina", "Bharara|Niche Femme|Árabe Femenina", "Lattafa|Noble Blush|Árabe Femenina", "Lattafa|Opulent Musk|Árabe Femenina", "Lattafa|Qimmah|Árabe Femenina", "Lattafa|Sakeena|Árabe Femenina", "Lattafa|Teriaq|Árabe Femenina", "Lattafa|Yara|Árabe Femenina", "Lattafa|Yara Candy|Árabe Femenina", "Lattafa|Yara Elixir|Árabe Femenina", "Lattafa|Yara Moi|Árabe Femenina", "Lattafa|Yara Tous|Árabe Femenina",
+
+        "Afnan|9PM|Árabe Masculina", "Lattafa|Adeeb|Árabe Masculina", "Lattafa|Al Quiam Gold|Árabe Masculina", "Haramain|Amber Oud Dubai Night|Árabe Masculina", "Lattafa|Ansaam Silver|Árabe Masculina", "Lattafa|Asad|Árabe Masculina", "Lattafa|Asad Elixir|Árabe Masculina", "Lattafa|Asad Bourbon|Árabe Masculina", "Lattafa|Bade Al Oud For Glory|Árabe Masculina", "Bharara|Bharara King|Árabe Masculina", "Lattafa|Blue Saphire|Árabe Masculina", "Armaf|Club de Nuit|Árabe Masculina", "Armaf|Club de Nuit Iconic|Árabe Masculina", "Lattafa|Fakhar Black|Árabe Masculina", "Rasasi|Hawas|Árabe Masculina", "Rasasi|Hawas Ice|Árabe Masculina", "Maison Alhambra|Jean Lowe Immortal|Árabe Masculina", "Lattafa|Khamrah|Árabe Masculina", "Lattafa|Khamrah Dukhan|Árabe Masculina", "Lattafa|Khamrah Qawa|Árabe Masculina", "Lattafa|Maahir Black|Árabe Masculina", "Armaf|Mandarine Sky|Árabe Masculina", "Initio|Oud For Greatness|Árabe Masculina", "Lattafa|Qaed Al Fursan|Árabe Masculina", "Maison Alhambra|Salvo|Árabe Masculina", "Lattafa|Suqraat|Árabe Masculina", "Armaf|Tag|Árabe Masculina", "Lattafa|The Kingdom|Árabe Masculina",
+
+        "Lattafa|Al Jawara|Árabe Unisex", "Al Haramain|Amber Oud Gold|Árabe Unisex", "Orientica|Amber Rouge|Árabe Unisex", "Lattafa|Bade Al Oud For Amethyst|Árabe Unisex", "Lattafa|Bade Al Oud Honor & Glory|Árabe Unisex", "Lattafa|Bade Al Oud Sublime|Árabe Unisex", "Armaf|Club de Nuit Untold|Árabe Unisex", "Lattafa|Nebras|Árabe Unisex", "Armaf|Odyssey Spectra|Árabe Unisex", "Orientica|Oud Saffron|Árabe Unisex", "Lattafa|Thara|Árabe Unisex", "Kayali|Yum Pistachio Gelato|Árabe Unisex", "Xerjoff|Accento|Árabe Unisex", "Xerjoff|Amber Gold|Árabe Unisex",
+
+        "Unisex|Eclaire blush|Fusión Unisex", "Unisex|Velvet monarche|Fusión Unisex", "Masculino|Scandal atlas|Fusión Masculina", "Femenino|Mango Hypnotic|Fusión Femenina", "Desconocida|Candy crush|Nuevo Femenino", "Nishane|Wulong Cha|Nuevo Femenino", "Jimmy Choo|I Want choo|Nuevo Femenino", "Carolina Herrera|Very Good Girl Elixir|Nuevo Femenino", "Yves Saint Laurent|Elixir|Nuevo Femenino", "Lataffa|Yum Yum|Nuevo Femenino", "Paris Corner|Marshmellow Blush|Nuevo Femenino", "Victoria Secret|Pure seduccion|Nuevo Femenino", "Victoria Secret|Mango temptation|Nuevo Femenino", "Valentino|Valentino born in roma Extradose|Nuevo Femenino", "Lattafa|Her confession|Nuevo Femenino", "Carolina Herrera|Good girl very Elixir|Nuevo Femenino", "MONTALE|Gold Flower|Nuevo Unisex", "Emporio Armani|Stronger with you sandal wood|Nuevo Masculino", "Jean Paul Gaultier|La Male Elixir Absolu|Nuevo Masculino", "Lattafa|Atlas|Nuevo Masculino", "Versace|Eros Energy|Nuevo Masculino", "Yves Saint Laurent|MYSL silver y elixir|Nuevo Masculino", "Creed|Silver mountain water|Nuevo Masculino", "Odissey|Go Mango|Nuevo Masculino", "Versace|Eros energy pour homme|Nuevo Masculino", "Marly|Haltane parfum|Nuevo Masculino", "Louis Vuitton|Nouveau monde|Nuevo Masculino", "Valentino|Born in roma extradose uomo|Nuevo Masculino", "ARMAF|Club de Nuit Sillage|Nuevo Masculino", "ARMAF|TAG|Nuevo Masculino", "Xerjoff|Torino 21|Nuevo Masculino", "Odissey|Vintage|Nuevo Masculino"
+    ]/*CATALOGO_FIN*/;
+
+    // ==========================================
+    // BASE DE DATOS (carga desde TXT)
+    // Formato por línea:  Marca|Fragancia|Categoría
+    // Se guarda en el navegador (localStorage) hasta que se restaure.
+    // ==========================================
+    const STORAGE_KEY = 'catalogoFabrica_v1';
+
+    function construirDatos(lineas) {
+        return lineas.map(item => {
+            const parts = item.split('|');
+            return { marca: parts[0], perfume: parts[1], categoria: parts[2] };
+        }).sort((a, b) => a.marca.localeCompare(b.marca));
+    }
+
+    function parsearTXT(texto) {
+        const resultado = [];
+        const errores = [];
+        texto.replace(/^\uFEFF/, '').split(/\r?\n/).forEach((linea, i) => {
+            linea = linea.trim();
+            if (!linea || linea.startsWith('#')) return;
+            const sep = linea.includes('|') ? '|' : (linea.includes('\t') ? '\t' : ';');
+            const p = linea.split(sep).map(x => x.trim().replace(/^"|"$/g, ''));
+            if (i === 0 && /^marca$/i.test(p[0]) && /categor/i.test(p[2] || '')) return; // encabezado
+            if (p.length < 3 || !p[0] || !p[1] || !p[2]) { errores.push(i + 1); return; }
+            resultado.push(p[0] + '|' + p[1] + '|' + p[2]);
+        });
+        return { lineas: resultado, errores };
+    }
+
+    function mostrarEstado(msg, tipo) {
+        const el = document.getElementById('dbStatus');
+        el.textContent = msg;
+        el.className = 'db-status ' + (tipo || '');
+    }
+
+    let sortedData = construirDatos(rawData);
+    let usandoPersonalizado = false;
+    try {
+        const guardado = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (Array.isArray(guardado) && guardado.length) {
+            sortedData = construirDatos(guardado);
+            usandoPersonalizado = true;
+        }
+    } catch (e) { /* sin almacenamiento disponible: se usa la lista original */ }
+
+    const tableBody = document.getElementById('tableBody');
+    let currentCategory = 'Todas';
+    let cart = []; 
+    
+    const formateadorMoneda = new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 0
+    });
+
+    function renderTable(data) {
+        tableBody.innerHTML = "";
+        data.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            const safeMarca = item.marca.replace(/'/g, "\\'");
+            const safePerfume = item.perfume.replace(/'/g, "\\'");
+            const safeGenero = obtenerGenero(item.categoria).replace(/'/g, "\\'");
+            
+            tr.innerHTML = `
+                <td><span class="marca-text">${item.marca}</span></td>
+                <td><span class="perfume-text">${item.perfume}</span><span class="category-badge cat-mobile">${item.categoria}</span></td>
+                <td class="col-cat"><span class="category-badge">${item.categoria}</span></td>
+                <td>
+                    <div class="btn-group">
+                        ${PRESENTACIONES.map(p => `<button class="btn-add ml" onclick="agregarAlCarrito('${safeMarca}', '${safePerfume}', '${p.id}', this, '${safeGenero}')">${p.nombre.replace(' ', '')}</button>`).join('')}
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    function setCategory(cat, btn) {
+        currentCategory = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterTable();
+    }
+
+    function toggleMenu(e) {
+        e.stopPropagation();
+        document.getElementById('menuDropdown').classList.toggle('open');
+    }
+    function cerrarMenu() { document.getElementById('menuDropdown').classList.remove('open'); }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.menu-wrap')) cerrarMenu();
+    });
+
+    // --- Editor de precios ---
+    let preciosEdit = [];
+    let presTab = 1;
+
+    function abrirConfig() {
+        document.getElementById('cfgWhatsApp').value = numeroWhatsApp;
+        preciosEdit = JSON.parse(JSON.stringify(PRESENTACIONES)).map(p => ({
+            ...p,
+            escalas: p.escalas ? p.escalas.map(e => ({ desde: String(e.desde), precio: String(e.precio), regalo: !!e.regalo })) : null
+        }));
+        const i60 = preciosEdit.findIndex(p => p.escalas);
+        presTab = i60 >= 0 ? i60 : 0;
+        renderEditorPrecios();
+        document.getElementById('configModal').style.display = 'flex';
+        document.body.classList.add('modal-abierto');
+    }
+
+    function renderEditorPrecios() {
+        document.getElementById('presTabs').innerHTML = preciosEdit.map((p, i) =>
+            `<button class="pres-tab${i === presTab ? ' active' : ''}" onclick="presTab=${i}; renderEditorPrecios()">${p.nombre}</button>`
+        ).join('');
+        const p = preciosEdit[presTab];
+        const cont = document.getElementById('presEditor');
+        if (!p.escalas) {
+            cont.innerHTML = `<div class="sin-precio">${p.nombre}: sin precios cargados.<br>En el carrito figura como <strong>"A confirmar"</strong>.</div>
+                <div class="esc-actions"><button onclick="cargarEscalas()">+ Cargar precios para ${p.nombre}</button></div>`;
+            return;
+        }
+        cont.innerHTML = `
+            <table class="esc-table">
+                <thead><tr><th style="width:30%">Desde (unid.)</th><th>Precio c/u ($)</th><th style="width:34px">🎁</th><th style="width:30px"></th></tr></thead>
+                <tbody>${p.escalas.map((e, j) => `
+                    <tr>
+                        <td><input type="number" inputmode="numeric" min="1" value="${e.desde}" oninput="preciosEdit[${presTab}].escalas[${j}].desde=this.value"></td>
+                        <td><input type="number" inputmode="numeric" min="0" value="${e.precio}" oninput="preciosEdit[${presTab}].escalas[${j}].precio=this.value"></td>
+                        <td><input type="checkbox" ${e.regalo ? 'checked' : ''} onchange="preciosEdit[${presTab}].escalas[${j}].regalo=this.checked"></td>
+                        <td><button class="esc-del" title="Quitar" onclick="quitarEscala(${j})">✕</button></td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+            <div class="esc-actions">
+                <button onclick="agregarEscala()">+ Agregar escala</button>
+                <button onclick="dejarSinPrecio()">Dejar sin precio (a confirmar)</button>
+            </div>`;
+    }
+
+    function cargarEscalas() {
+        // Toma las cantidades de otra presentación con precios, para no tipearlas de nuevo.
+        const modelo = preciosEdit.find(p => p.escalas && p.escalas.length);
+        preciosEdit[presTab].escalas = modelo
+            ? modelo.escalas.map(e => ({ desde: e.desde, precio: '', regalo: e.regalo }))
+            : [{ desde: '1', precio: '', regalo: false }];
+        renderEditorPrecios();
+    }
+    function agregarEscala() {
+        preciosEdit[presTab].escalas.push({ desde: '', precio: '', regalo: false });
+        renderEditorPrecios();
+    }
+    function quitarEscala(j) {
+        preciosEdit[presTab].escalas.splice(j, 1);
+        if (!preciosEdit[presTab].escalas.length) preciosEdit[presTab].escalas = null;
+        renderEditorPrecios();
+    }
+    function dejarSinPrecio() {
+        if (!confirm('¿Dejar ' + preciosEdit[presTab].nombre + ' sin precio ("A confirmar")?')) return;
+        preciosEdit[presTab].escalas = null;
+        renderEditorPrecios();
+    }
+
+    // Valida y convierte lo editado. Devuelve null si hay un error (y lo muestra).
+    function validarPrecios() {
+        const resultado = [];
+        for (let i = 0; i < preciosEdit.length; i++) {
+            const p = preciosEdit[i];
+            if (!p.escalas) { resultado.push({ id: p.id, nombre: p.nombre, escalas: null }); continue; }
+            const escalas = [];
+            for (const e of p.escalas) {
+                const desde = parseInt(e.desde, 10);
+                const precio = Number(String(e.precio).replace(',', '.'));
+                const error = (!desde || desde < 1) ? 'la cantidad "Desde" tiene que ser 1 o más'
+                    : (!precio || precio <= 0) ? 'falta el precio o no es válido'
+                    : escalas.some(x => x.desde === desde) ? 'hay dos escalas que empiezan en ' + desde
+                    : null;
+                if (error) {
+                    presTab = i; renderEditorPrecios();
+                    alert(p.nombre + ': ' + error + '.');
+                    return null;
+                }
+                escalas.push({ desde, precio, regalo: !!e.regalo });
+            }
+            escalas.sort((a, b) => b.desde - a.desde);
+            if (escalas[escalas.length - 1].desde !== 1) {
+                presTab = i; renderEditorPrecios();
+                alert(p.nombre + ': tiene que haber una escala que empiece en 1 unidad.');
+                return null;
+            }
+            resultado.push({ id: p.id, nombre: p.nombre, escalas });
+        }
+        return resultado;
+    }
+
+    function restaurarPrecios() {
+        if (!confirm('¿Volver a los precios que vienen en el archivo? Se pierden los precios editados en este dispositivo.')) return;
+        try { localStorage.removeItem(PRECIOS_KEY); } catch (e) {}
+        PRESENTACIONES = JSON.parse(JSON.stringify(PRESENTACIONES_ARCHIVO));
+        actualizarUI();
+        cerrarConfig();
+        mostrarEstado('Precios originales restaurados.', 'ok');
+    }
+
+    // Genera una copia de este catálogo con los precios, el número y la lista actuales ya incluidos,
+    // para mandarla a los clientes.
+    function descargarCatalogoHTML() {
+        const aJS = (obj) => JSON.stringify(obj, null, 4).replace(/<\//g, '<\\/');
+        let html = HTML_ORIGINAL;
+        html = html.replace(/\/\*PRECIOS_INICIO\*\/[\s\S]*?\/\*PRECIOS_FIN\*\//, () =>
+            '/*PRECIOS_INICIO*/' + aJS(PRESENTACIONES) + '/*PRECIOS_FIN*/');
+        html = html.replace(/\/\*CATALOGO_INICIO\*\/[\s\S]*?\/\*CATALOGO_FIN\*\//, () =>
+            '/*CATALOGO_INICIO*/' + aJS(sortedData.map(i => i.marca + '|' + i.perfume + '|' + i.categoria)) + '/*CATALOGO_FIN*/');
+        html = html.replace(/const WSP_POR_DEFECTO = "\d*";/, () => 'const WSP_POR_DEFECTO = "' + numeroWhatsApp + '";');
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Catalogo_Fabrica.html';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        mostrarEstado('✔ Catálogo descargado con los precios actuales. Ese es el archivo para mandar a los clientes.', 'ok');
+    }
+    function cerrarConfig() {
+        document.getElementById('configModal').style.display = 'none';
+        document.body.classList.remove('modal-abierto');
+    }
+    function guardarConfig() {
+        const num = document.getElementById('cfgWhatsApp').value.replace(/\D/g, '');
+        if (num.length < 10 || num.length > 15) {
+            alert('Ingresá un número válido con código de país (entre 10 y 15 dígitos). Ej: 5492216418078');
+            return;
+        }
+        const nuevosPrecios = validarPrecios();
+        if (!nuevosPrecios) return;
+
+        numeroWhatsApp = num;
+        PRESENTACIONES = nuevosPrecios;
+        try {
+            localStorage.setItem(WSP_KEY, num);
+            localStorage.setItem(PRECIOS_KEY, JSON.stringify(nuevosPrecios.map(p => ({ id: p.id, escalas: p.escalas }))));
+        } catch (e) {}
+        actualizarUI();
+        cerrarConfig();
+        mostrarEstado('✔ Configuración guardada. Para mandarla a clientes: ⋮ → Descargar catálogo para compartir.', 'ok');
+    }
+
+    function cargarTXT(event) {
+        const archivo = event.target.files[0];
+        if (!archivo) return;
+        const lector = new FileReader();
+        lector.onload = () => {
+            let texto = new TextDecoder('utf-8').decode(lector.result);
+            if (texto.includes('\uFFFD')) texto = new TextDecoder('windows-1252').decode(lector.result);
+            const { lineas, errores } = parsearTXT(texto);
+            if (!lineas.length) {
+                mostrarEstado('No se encontraron filas válidas. Formato: Marca|Fragancia|Categoría', 'error');
+                return;
+            }
+            sortedData = construirDatos(lineas);
+            usandoPersonalizado = true;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(lineas)); } catch (e) {}
+            cart = [];
+            actualizarUI();
+            filterTable();
+            let msg = '✔ Catálogo actualizado: ' + lineas.length + ' fragancias.';
+            if (errores.length) msg += ' Líneas ignoradas: ' + errores.slice(0, 10).join(', ') + (errores.length > 10 ? '…' : '');
+            mostrarEstado(msg, errores.length ? '' : 'ok');
+        };
+        lector.readAsArrayBuffer(archivo);
+        event.target.value = '';
+    }
+
+    function descargarTXT() {
+        const contenido = sortedData.map(i => i.marca + '|' + i.perfume + '|' + i.categoria).join('\r\n');
+        const blob = new Blob(['\uFEFF' + contenido], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'catalogo_fabrica.txt';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }
+
+    function restaurarCatalogo() {
+        if (!confirm('¿Volver al catálogo original incluido en el archivo?')) return;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        sortedData = construirDatos(rawData);
+        usandoPersonalizado = false;
+        cart = [];
+        actualizarUI();
+        filterTable();
+        mostrarEstado('Catálogo original restaurado.', 'ok');
+    }
+
+    function filterTable() {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const filteredData = sortedData.filter(item => {
+            const matchBuscador = item.marca.toLowerCase().includes(input) || item.perfume.toLowerCase().includes(input);
+            let matchCategoria = true;
+            if (currentCategory !== 'Todas') {
+                if (currentCategory === 'Novedades') {
+                    matchCategoria = item.categoria.includes('Nuevo') || item.categoria.includes('Fusión');
+                } else {
+                    matchCategoria = item.categoria.includes(currentCategory);
+                }
+            }
+            return matchBuscador && matchCategoria;
+        });
+        renderTable(filteredData);
+    }
+
+    function getPresentacion(id) { return PRESENTACIONES.find(p => p.id === id); }
+
+    // Saca el género a partir de la categoría (Femeninas, Árabe Masculina, Fusión Unisex, etc.)
+    function obtenerGenero(categoria) {
+        const c = (categoria || '').toLowerCase();
+        if (c.includes('unisex')) return 'Unisex';
+        if (c.includes('femenin')) return 'Femenino';
+        if (c.includes('masculin')) return 'Masculino';
+        return '';
+    }
+
+    function agregarAlCarrito(marca, perfume, ml, btn, genero) {
+        genero = genero || '';
+        // El género es parte de la clave: "212 VIP" femenino y masculino son productos distintos.
+        const itemExistente = cart.find(i => i.marca === marca && i.perfume === perfume && i.ml === ml && i.genero === genero);
+        if (itemExistente) {
+            itemExistente.cantidad++;
+        } else {
+            cart.push({ marca: marca, perfume: perfume, genero: genero, ml: ml, cantidad: 1 });
+        }
+        if (btn) {
+            btn.classList.add('added');
+            setTimeout(() => btn.classList.remove('added'), 400);
+        }
+        actualizarUI();
+    }
+
+    function modificarCantidad(index, delta) {
+        cart[index].cantidad += delta;
+        if (cart[index].cantidad <= 0) {
+            cart.splice(index, 1);
+        }
+        actualizarUI();
+    }
+
+    function actualizarUI() {
+        const cartCount = document.getElementById('cartCount');
+        const cartBtn = document.getElementById('cartBtn');
+        const itemsList = document.getElementById('cartItemsList');
+        const cartSummary = document.getElementById('cartSummary');
+        const checkoutForm = document.getElementById('checkoutForm');
+        const btnWsp = document.getElementById('btnWsp');
+
+        const totalItems = cart.reduce((suma, item) => suma + item.cantidad, 0);
+        cartCount.innerText = totalItems;
+
+        if (totalItems > 0) {
+            cartBtn.style.display = 'flex';
+            cartSummary.style.display = 'block';
+            checkoutForm.style.display = 'flex';
+            btnWsp.style.display = 'flex';
+        } else {
+            cartBtn.style.display = 'none';
+            cartSummary.style.display = 'none';
+            checkoutForm.style.display = 'none';
+            btnWsp.style.display = 'none';
+        }
+
+        if (cart.length === 0) {
+            itemsList.innerHTML = `<div class="empty-cart-msg">Tu pedido está vacío.</div>`;
+        } else {
+            itemsList.innerHTML = "";
+            cart.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.perfume}${item.genero ? ` <span class="cart-item-genero">(${item.genero})</span>` : ''}</div>
+                        <div class="cart-item-brand">${item.marca} · <strong>${getPresentacion(item.ml).nombre}</strong></div>
+                    </div>
+                    <div class="cart-controls">
+                        <button class="qty-btn" onclick="modificarCantidad(${index}, -1)">-</button>
+                        <span>${item.cantidad}</span>
+                        <button class="qty-btn" onclick="modificarCantidad(${index}, 1)">+</button>
+                    </div>
+                `;
+                itemsList.appendChild(itemDiv);
+            });
+        }
+
+        // --- CALCULADORA MAYORISTA POR ESCALAS (por presentación) ---
+        const res = calcularPedido();
+        const resumen = document.getElementById('resumenPresentaciones');
+        resumen.innerHTML = '';
+        res.lineas.forEach(l => {
+            const div = document.createElement('div');
+            div.className = 'summary-line' + (l.precio == null ? ' pend' : '');
+            const izq = `${l.nombre}: ${l.cantidad} u` + (l.precio != null ? ` × ${formateadorMoneda.format(l.precio)}` : '');
+            const der = l.precio != null ? formateadorMoneda.format(l.subtotal) : 'A confirmar';
+            div.innerHTML = `<span>${izq}</span><span>${der}</span>`;
+            resumen.appendChild(div);
+        });
+
+        document.getElementById('promoLine').style.display = res.regalo ? 'flex' : 'none';
+        document.getElementById('totalDisplay').innerText = formateadorMoneda.format(res.total);
+        const pendientes = res.lineas.filter(l => l.precio == null).map(l => l.nombre);
+        document.getElementById('totalNote').innerText = pendientes.length
+            ? `+ ${pendientes.join(' y ')}: precio a confirmar`
+            : '';
+
+        const hint = document.getElementById('tierHint');
+        hint.className = 'tier-hint';
+        hint.innerText = res.lineas.filter(l => l.precio != null).map(l => {
+            if (!l.siguiente) return `${l.nombre}: ¡ya tenés el mejor precio!`;
+            const faltan = l.siguiente.desde - l.cantidad;
+            return `${l.nombre}: agregá ${faltan} más y pagás ${formateadorMoneda.format(l.siguiente.precio)} c/u` + (l.siguiente.regalo && !l.regalo ? ' + perfume de regalo' : '') + '.';
+        }).join('\n');
+    }
+
+    // Calcula el pedido agrupado por presentación.
+    function calcularPedido() {
+        const lineas = [];
+        PRESENTACIONES.forEach(p => {
+            const cantidad = cart.filter(i => i.ml === p.id).reduce((s, i) => s + i.cantidad, 0);
+            if (!cantidad) return;
+            if (!p.escalas) {
+                lineas.push({ nombre: p.nombre, cantidad, precio: null, subtotal: 0, regalo: false, siguiente: null });
+                return;
+            }
+            const escala = p.escalas.find(e => cantidad >= e.desde) || p.escalas[p.escalas.length - 1];
+            const siguiente = [...p.escalas].reverse().find(e => e.desde > cantidad) || null;
+            lineas.push({ nombre: p.nombre, cantidad, precio: escala.precio, subtotal: cantidad * escala.precio, regalo: !!escala.regalo, siguiente });
+        });
+        return {
+            lineas,
+            total: lineas.reduce((s, l) => s + l.subtotal, 0),
+            regalo: lineas.some(l => l.regalo)
+        };
+    }
+
+    function cambiarEnvio() {
+        const envio = document.getElementById('clienteEnvio').value;
+        const dir = document.getElementById('clienteDireccion');
+        if (envio === 'Domicilio') {
+            dir.style.display = 'block';
+            dir.focus();
+        } else {
+            dir.style.display = 'none';
+            dir.value = '';
+        }
+    }
+
+    function toggleCartModal() {
+        const modal = document.getElementById('cartModal');
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        document.body.classList.toggle('modal-abierto', modal.style.display === 'flex');
+    }
+
+    function closeModalOnOutsideClick(e) {
+        if (e.target.id === 'cartModal') {
+            toggleCartModal();
+        }
+    }
+
+    function enviarPorWhatsApp() {
+        if (cart.length === 0) return;
+
+        const nombre = document.getElementById('clienteNombre').value.trim();
+        const celular = document.getElementById('clienteCelular').value.trim();
+        const localidad = document.getElementById('clienteLocalidad').value.trim();
+        const cp = document.getElementById('clienteCP').value.trim();
+        const mail = document.getElementById('clienteMail').value.trim();
+        const envio = document.getElementById('clienteEnvio').value;
+        const direccion = document.getElementById('clienteDireccion').value.trim();
+
+        const cantidadTotal = cart.reduce((suma, item) => suma + item.cantidad, 0);
+        if (!nombre || !celular || !localidad || !cp || !mail || !envio) {
+            alert("Por favor, completá todos los datos: Nombre, Celular, Localidad, Código postal, Mail y si retirás en sucursal o es envío a domicilio.");
+            return;
+        }
+        if (envio === 'Domicilio' && !direccion) {
+            alert("Ingresá la dirección de envío.");
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+            alert("El mail ingresado no es válido.");
+            return;
+        }
+
+        let texto = "¡Hola! Quiero hacer el siguiente pedido de fragancias:\n\n";
+
+        texto += "*DATOS DEL CLIENTE:*\n";
+        texto += `👤 Nombre: ${nombre}\n`;
+        texto += `📱 Celular: ${celular}\n`;
+        texto += `🏙️ Localidad: ${localidad}\n`;
+        texto += `📮 Código postal: ${cp}\n`;
+        texto += `✉️ Mail: ${mail}\n`;
+        if (envio === 'Sucursal') {
+            texto += `🏪 Entrega: Retiro en sucursal\n`;
+        } else {
+            texto += `🚚 Entrega: Envío a domicilio\n`;
+            texto += `📍 Dirección de envío: ${direccion}\n`;
+        }
+        texto += `\n`;
+
+        texto += "*PEDIDO:*\n";
+        cart.forEach(item => {
+            texto += `▫️ ${item.cantidad}x ${item.marca} - ${item.perfume}${item.genero ? ` (${item.genero})` : ''} - ${getPresentacion(item.ml).nombre}\n`;
+        });
+        
+        const res = calcularPedido();
+
+        texto += `\n📦 Cantidad total: ${cantidadTotal} unidades\n`;
+        res.lineas.forEach(l => {
+            texto += l.precio != null
+                ? `💲 ${l.nombre}: ${l.cantidad} u × ${formateadorMoneda.format(l.precio)} = ${formateadorMoneda.format(l.subtotal)}\n`
+                : `💲 ${l.nombre}: ${l.cantidad} u — precio a confirmar\n`;
+        });
+        const pendientes = res.lineas.filter(l => l.precio == null);
+        texto += `\n*TOTAL A PAGAR: ${formateadorMoneda.format(res.total)}*` + (pendientes.length ? ` _(+ ${pendientes.map(l => l.nombre).join(' y ')} a confirmar)_` : '') + `\n`;
+
+        if (res.regalo) {
+            texto += `🎁 Incluye un perfume de 30ml de regalo\n`;
+        }
+
+        texto += "\n¡Muchas gracias!";
+
+        const textoCodificado = encodeURIComponent(texto);
+        const url = `https://wa.me/${numeroWhatsApp}?text=${textoCodificado}`;
+        const ventana = window.open(url, '_blank');
+        if (!ventana) window.location.href = url;
+    }
+
+    // Inicializar
+    renderTable(sortedData);
+</script>
+
+</body>
+</html>
