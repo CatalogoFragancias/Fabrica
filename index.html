@@ -300,8 +300,8 @@
         </div>
         <div class="config-field">
             <label for="cfgWhatsApp"><strong>Número de WhatsApp</strong></label>
-            <input type="tel" id="cfgWhatsApp" inputmode="numeric" placeholder="5492216418078">
-            <small>Con código de país y sin +, espacios ni guiones. Ej: 5492216418078</small>
+            <input type="tel" id="cfgWhatsApp" inputmode="numeric" placeholder="5492213091590">
+            <small>Con código de país y sin +, espacios ni guiones. Ej: 5492213091590</small>
         </div>
         <div class="config-section">
             <strong>Precios por presentación</strong>
@@ -327,7 +327,7 @@
     // CONFIGURACIÓN
     // ==========================================
     const WSP_KEY = 'catalogoFabrica_wsp';
-    const WSP_POR_DEFECTO = "5492216418078";
+    const WSP_POR_DEFECTO = "5492213091590";
     let numeroWhatsApp = WSP_POR_DEFECTO;
     try { numeroWhatsApp = localStorage.getItem(WSP_KEY) || WSP_POR_DEFECTO; } catch (e) {}
     
@@ -608,7 +608,7 @@
     function guardarConfig() {
         const num = document.getElementById('cfgWhatsApp').value.replace(/\D/g, '');
         if (num.length < 10 || num.length > 15) {
-            alert('Ingresá un número válido con código de país (entre 10 y 15 dígitos). Ej: 5492216418078');
+            alert('Ingresá un número válido con código de país (entre 10 y 15 dígitos). Ej: 5492213091590');
             return;
         }
         const nuevosPrecios = validarPrecios();
