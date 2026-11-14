@@ -186,6 +186,10 @@
             .category-badge.cat-mobile { letter-spacing: 0; }
             .container { padding: 16px 4px; }
         }
+        /* --- Vaciar carrito --- */
+        .cart-actions { display: none; justify-content: flex-end; margin: -5px 0 12px; }
+        .btn-vaciar { background: none; border: 1px solid #b00020; color: #b00020; padding: 7px 12px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; cursor: pointer; }
+        .btn-vaciar.confirmar { background: #b00020; color: #fff; }
         /* --- Fotos --- */
         .aviso-fotos { margin: 8px auto 0; max-width: 480px; font-size: 0.72rem; font-style: italic; color: #6b6b6b; line-height: 1.4; }
         .foto-link { display: block; margin-top: 4px; font-size: 0.72rem; color: #8b7355; text-decoration: none; font-weight: 600; }
@@ -259,6 +263,10 @@
         
         <div class="cart-items-list" id="cartItemsList">
             <!-- Los items del carrito irán aquí -->
+        </div>
+
+        <div class="cart-actions" id="cartActions">
+            <button class="btn-vaciar" id="btnVaciar" onclick="vaciarCarrito()">🗑 Vaciar carrito</button>
         </div>
 
         <!-- Resumen de Calculadora -->
@@ -1283,6 +1291,7 @@
         const totalItems = cart.reduce((suma, item) => suma + item.cantidad, 0);
         cartCount.innerText = totalItems;
         guardarCarrito();
+        document.getElementById('cartActions').style.display = cart.length > 0 ? 'flex' : 'none';
 
         if (totalItems > 0) {
             cartBtn.style.display = 'flex';
@@ -1447,6 +1456,30 @@
             const g = JSON.parse(sessionStorage.getItem('carritoFabrica') || 'null');
             if (Array.isArray(g) && g.length) { cart = g.filter(i => i && getPresentacion(i.ml)); actualizarUI(); }
         } catch (e) {}
+    }
+
+    // --- Vaciar carrito (se confirma tocando dos veces, sin ventanas emergentes) ---
+    let vaciarTimer = null;
+    function resetVaciar() {
+        clearTimeout(vaciarTimer);
+        const b = document.getElementById('btnVaciar');
+        if (!b) return;
+        b.classList.remove('confirmar');
+        b.textContent = '🗑 Vaciar carrito';
+    }
+    function vaciarCarrito() {
+        const b = document.getElementById('btnVaciar');
+        if (!b.classList.contains('confirmar')) {
+            b.classList.add('confirmar');
+            b.textContent = '¿Seguro? Tocá de nuevo';
+            vaciarTimer = setTimeout(resetVaciar, 4000);
+            return;
+        }
+        resetVaciar();
+        cart = [];
+        actualizarUI();
+        // Con el carrito vacío se cierra la ventana del pedido.
+        if (document.getElementById('cartModal').style.display === 'flex') toggleCartModal();
     }
 
     function toggleCartModal() {
