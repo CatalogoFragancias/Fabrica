@@ -186,13 +186,6 @@
             .category-badge.cat-mobile { letter-spacing: 0; }
             .container { padding: 16px 4px; }
         }
-        /* --- Envío a dos números --- */
-        .paso2 { margin-top: 12px; padding: 12px; border: 2px solid #25D366; border-radius: 8px; background: #eafaf0; }
-        .paso2-texto { font-size: 0.85rem; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; text-align: center; }
-        .btn-paso2 { animation: latido 1.4s ease-in-out infinite; }
-        @keyframes latido { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-        @media (prefers-reduced-motion: reduce) { .btn-paso2 { animation: none; } }
-        .envio-ok { margin-top: 12px; text-align: center; font-size: 0.85rem; font-weight: 600; color: #2e7d32; }
         /* --- Vaciar carrito --- */
         .cart-actions { display: none; justify-content: flex-end; margin: -5px 0 12px; }
         .btn-vaciar { background: none; border: 1px solid #b00020; color: #b00020; padding: 7px 12px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; cursor: pointer; }
@@ -310,11 +303,6 @@
         <button class="btn-whatsapp" onclick="enviarPorWhatsApp()" id="btnWsp" style="display:none;">
             Enviar pedido por WhatsApp
         </button>
-        <div class="paso2" id="paso2" style="display:none;">
-            <div class="paso2-texto">✔ Paso 1 listo. Falta un paso:</div>
-            <button class="btn-whatsapp btn-paso2" onclick="enviarSegundo()">Paso 2: enviar también al 2º número</button>
-        </div>
-        <div class="envio-ok" id="envioOk" style="display:none;">✔ Pedido enviado a los dos números.</div>
     </div>
 </div>
 
@@ -332,7 +320,7 @@
         <div class="config-field">
             <label for="cfgWhatsApp2"><strong>Número de WhatsApp 2</strong> <span style="font-weight:400;">(opcional)</span></label>
             <input type="tel" id="cfgWhatsApp2" inputmode="numeric" placeholder="5492216031534">
-            <small>El pedido también se manda a este número. Dejalo vacío para mandarlo solo al número 1.</small>
+            <small>Cada pedido va a uno de los dos números, elegido al azar (más o menos mitad y mitad). Dejalo vacío para que todos vayan al número 1.</small>
         </div>
         <div class="config-section">
             <strong>Precios por presentación</strong>
@@ -374,7 +362,7 @@
     const WSP_POR_DEFECTO = "5492213091590";
     let numeroWhatsApp = WSP_POR_DEFECTO;
     try { numeroWhatsApp = localStorage.getItem(WSP_KEY) || WSP_POR_DEFECTO; } catch (e) {}
-    // Segundo número (opcional): el pedido también se manda acá. Vacío = solo al primero.
+    // Segundo número (opcional): los pedidos se reparten al azar entre el 1 y el 2. Vacío = todos al 1.
     const WSP2_KEY = 'catalogoFabrica_wsp2';
     const WSP2_POR_DEFECTO = "5492216031534";
     let numeroWhatsApp2 = WSP2_POR_DEFECTO;
@@ -1322,7 +1310,7 @@
         const totalItems = cart.reduce((suma, item) => suma + item.cantidad, 0);
         cartCount.innerText = totalItems;
         guardarCarrito();
-        if (!restaurando) resetPaso2(); // si cambia el pedido, hay que mandarlo de nuevo
+        if (!restaurando) nuevoSorteo(); // pedido nuevo o modificado: se vuelve a sortear el número
         document.getElementById('cartActions').style.display = cart.length > 0 ? 'flex' : 'none';
 
         if (totalItems > 0) {
@@ -1589,42 +1577,33 @@
 
         texto += "\n¡Muchas gracias!";
 
-        // Si hay segundo número, queda pendiente el paso 2 (se guarda por si la página se recarga al volver).
-        if (numeroWhatsApp2 && numeroWhatsApp2 !== numeroWhatsApp) {
-            mensajePendiente = texto;
-            try { sessionStorage.setItem(PASO2_KEY, texto); } catch (e) {}
-            mostrarPaso2();
-        }
-        abrirWhatsApp(numeroWhatsApp, texto);
+        abrirWhatsApp(numeroParaEstePedido(), texto);
     }
 
-    // --- Envío al segundo número ---
-    const PASO2_KEY = 'catalogoFabrica_paso2';
-    let mensajePendiente = '';
+    // --- Reparto al azar entre los dos números ---
+    // El número se elige una vez por pedido: si el cliente toca "Enviar" de nuevo, va al mismo número
+    // (así no le llega el mismo pedido a los dos). Si cambia el pedido, se vuelve a sortear.
+    const ASIGNADO_KEY = 'catalogoFabrica_numeroPedido';
+    function numerosDisponibles() {
+        return [numeroWhatsApp, numeroWhatsApp2].filter((n, i, arr) => n && arr.indexOf(n) === i);
+    }
+    function numeroParaEstePedido() {
+        const nums = numerosDisponibles();
+        let asignado = '';
+        try { asignado = sessionStorage.getItem(ASIGNADO_KEY) || ''; } catch (e) {}
+        if (!nums.includes(asignado)) {
+            asignado = nums[Math.floor(Math.random() * nums.length)];
+            try { sessionStorage.setItem(ASIGNADO_KEY, asignado); } catch (e) {}
+        }
+        return asignado;
+    }
+    function nuevoSorteo() {
+        try { sessionStorage.removeItem(ASIGNADO_KEY); } catch (e) {}
+    }
     function abrirWhatsApp(numero, texto) {
         const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
         const ventana = window.open(url, '_blank');
         if (!ventana) window.location.href = url;
-    }
-    function mostrarPaso2() {
-        document.getElementById('paso2').style.display = 'block';
-        document.getElementById('envioOk').style.display = 'none';
-        document.getElementById('btnWsp').textContent = 'Reenviar al 1º número';
-        try { document.getElementById('paso2').scrollIntoView({ block: 'nearest' }); } catch (e) {}
-    }
-    function resetPaso2() {
-        mensajePendiente = '';
-        try { sessionStorage.removeItem(PASO2_KEY); } catch (e) {}
-        document.getElementById('paso2').style.display = 'none';
-        document.getElementById('envioOk').style.display = 'none';
-        document.getElementById('btnWsp').textContent = 'Enviar pedido por WhatsApp';
-    }
-    function enviarSegundo() {
-        const texto = mensajePendiente;
-        if (!texto) return;
-        resetPaso2();
-        document.getElementById('envioOk').style.display = 'block';
-        abrirWhatsApp(numeroWhatsApp2, texto);
     }
 
     // Inicializar
@@ -1632,15 +1611,6 @@
     renderTable(sortedData);
     restaurarCarrito();
     restaurando = false;
-    // Si se volvió de WhatsApp y la página se recargó, se retoma el paso 2.
-    try {
-        const pend = sessionStorage.getItem(PASO2_KEY);
-        if (pend && cart.length && numeroWhatsApp2) {
-            mensajePendiente = pend;
-            mostrarPaso2();
-            toggleCartModal();
-        }
-    } catch (e) {}
 </script>
 
 </body>
